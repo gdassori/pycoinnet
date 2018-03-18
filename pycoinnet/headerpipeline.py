@@ -1,8 +1,7 @@
 import asyncio
-from . import logger
 
 from pycoin.message.InvItem import InvItem, ITEM_TYPE_BLOCK
-
+from pycoinnet import logger
 
 @asyncio.coroutine
 def _fetch_missing(peer, header):

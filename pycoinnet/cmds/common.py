@@ -11,6 +11,7 @@ from pycoinnet.BlockChainView import BlockChainView
 from pycoinnet.MappingQueue import MappingQueue
 from pycoinnet.Peer import Peer
 from pycoinnet.version import version_data_for_peer
+from pycoinnet import logger
 
 
 LOG_FORMAT = '%(asctime)s [%(process)d] [%(levelname)s] %(filename)s:%(lineno)d %(message)s'
@@ -20,7 +21,7 @@ def init_logging(level=logging.NOTSET, asyncio_debug=False):
     asyncio.tasks._DEBUG = asyncio_debug
     logger = logging.getLogger("pycoin")
     logger.setLevel(level=level)
-    logging.getLogger("asyncio").setLevel(logging.DEBUG if asyncio_debug else logging.INFO)
+    logger.setLevel(logging.DEBUG if asyncio_debug else logging.INFO)
 
 
 def set_log_file(logPath, level=logging.NOTSET):
@@ -29,7 +30,7 @@ def set_log_file(logPath, level=logging.NOTSET):
     new_log = logging.FileHandler(logPath)
     new_log.setLevel(level)
     new_log.setFormatter(logging.Formatter(LOG_FORMAT))
-    logging.getLogger("pycoin").addHandler(new_log)
+    logger.addHandler(new_log)
 
 
 def storage_base_path():

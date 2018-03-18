@@ -1,5 +1,6 @@
 import asyncio
-from . import logger
+
+from pycoinnet import logger
 
 
 class PeerEvent:

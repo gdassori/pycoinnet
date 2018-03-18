@@ -1,9 +1,9 @@
 import asyncio
 import binascii
-from . import logger
 import struct
 
 from pycoin import encoding
+from pycoinnet import logger
 
 
 class ProtocolError(Exception):

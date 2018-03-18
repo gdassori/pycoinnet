@@ -1,10 +1,9 @@
 import asyncio
 import collections
-from . import logger
 import weakref
 
 from pycoin.message.InvItem import InvItem, ITEM_TYPE_BLOCK
-
+from pycoinnet import logger
 
 class Blockfetcher:
     """

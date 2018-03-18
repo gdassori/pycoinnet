@@ -1,8 +1,8 @@
 import asyncio
-from . import logger
 
 from pycoin.message.InvItem import InvItem, ITEM_TYPE_BLOCK, ITEM_TYPE_MERKLEBLOCK
 from pycoinnet.MappingQueue import MappingQueue
+from pycoinnet import logger
 
 
 class InvBatcher:

@@ -6,7 +6,7 @@ list of available clients in a text file "addresses".
 """
 
 import asyncio
-import logging
+from pycoinnet import logger
 import random
 import time
 
@@ -37,7 +37,7 @@ class AddressDB(object):
                     port = int(port)
                     addresses[(host, port)] = timestamp
         except Exception:
-            logging.error("can't open %s, using default", self.path)
+            logger.error("can't open %s, using default", self.path)
             for h in [
                 "bitseed.xf2.org", "dnsseed.bluematt.me",
                 "seed.bitcoin.sipa.be", "dnsseed.bitcoin.dashjr.org"
@@ -66,7 +66,7 @@ class AddressDB(object):
 
     def save(self):
         if len(self.addresses) < 2:
-            logging.error("too few addresses: not overwriting")
+            logger.error("too few addresses: not overwriting")
             return
         with open(self.path, "w") as f:
             for host, port in self.addresses:
@@ -88,7 +88,7 @@ async def keep_minimum_connections(network, min_connection_count=4):
                 peer.send_msg("pong", nonce=data["nonce"])
             if name == 'addr':
                 date_address_tuples = data["date_address_tuples"]
-                logging.info("got %s message from %s with %d entries", name, peer, len(date_address_tuples))
+                logger.info("got %s message from %s with %d entries", name, peer, len(date_address_tuples))
                 address_db.add_addresses(
                     (timestamp, address.ip_bin, address.port)
                     for timestamp, address in date_address_tuples)
