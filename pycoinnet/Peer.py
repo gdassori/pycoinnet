@@ -1,6 +1,6 @@
 import asyncio
 import binascii
-import logging
+from . import logger
 import struct
 
 from pycoin import encoding
@@ -35,7 +35,7 @@ class Peer:
         packet = b"".join([
             self._magic_header, message_type_padded, message_size, message_checksum, message_data
         ])
-        logging.debug("sending message %s [%d bytes] to %s", message_type.decode("utf8"), len(packet), self)
+        logger.debug("sending message %s [%d bytes] to %s", message_type.decode("utf8"), len(packet), self)
         self._bytes_writ += len(packet)
         self._writer.write(packet)
 
@@ -72,7 +72,7 @@ class Peer:
         if actual_hash != transmitted_hash:
             raise ProtocolError("checksum is WRONG: %s instead of %s" % (
                 binascii.hexlify(actual_hash), binascii.hexlify(transmitted_hash)))
-        logging.debug("message %s: %s (%d byte payload)", self, message_name, len(message_data))
+        logger.debug("message %s: %s (%d byte payload)", self, message_name, len(message_data))
         if unpack_to_dict:
             message_data = self._parse_from_data(message_name, message_data)
         return message_name, message_data

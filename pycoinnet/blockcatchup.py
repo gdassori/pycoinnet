@@ -1,5 +1,5 @@
 import asyncio
-import logging
+from . import logger
 
 from pycoin.message.InvItem import InvItem, ITEM_TYPE_BLOCK
 
@@ -31,7 +31,7 @@ def create_peer_to_block_pipe(bcv, filter_f=lambda block_hash, index: ITEM_TYPE_
 
     async def improve_headers(peer, q):
         block_locator_hashes = bcv.block_locator_hashes()
-        logging.debug("getting headers after %d", bcv.last_block_tuple()[0])
+        logger.debug("getting headers after %d", bcv.last_block_tuple()[0])
         data = await peer.request_response(
             "getheaders", "headers", version=1, hashes=block_locator_hashes, hash_stop=bcv.hash_initial_block())
         headers = [bh for bh, t in data["headers"]]
@@ -49,7 +49,7 @@ def create_peer_to_block_pipe(bcv, filter_f=lambda block_hash, index: ITEM_TYPE_
             await q.put(None)
             return
 
-        logging.debug("block header count is now %d", block_number)
+        logger.debug("block header count is now %d", block_number)
         hashes = []
 
         for idx in range(block_number, bcv.last_block_index()+1):
@@ -64,7 +64,7 @@ def create_peer_to_block_pipe(bcv, filter_f=lambda block_hash, index: ITEM_TYPE_
             await q.put(None)
             return
         first_block_index, block_hashes = item
-        logging.info("got %d new header(s) starting at %d" % (len(block_hashes), first_block_index))
+        logger.info("got %d new header(s) starting at %d" % (len(block_hashes), first_block_index))
         block_hash_priority_pair_list = [(bh, first_block_index + _) for _, bh in enumerate(block_hashes)]
 
         for bh, pri in block_hash_priority_pair_list:
@@ -93,12 +93,12 @@ def create_peer_to_block_pipe(bcv, filter_f=lambda block_hash, index: ITEM_TYPE_
 
 
 def main():
-    from pycoinnet.cmds.common import peer_connect_pipeline, init_logging
+    from pycoinnet.cmds.common import peer_connect_pipeline, init_logger
     from pycoinnet.BlockChainView import BlockChainView
     from pycoinnet.networks import MAINNET
 
     async def go():
-        init_logging()
+        init_logger()
         bcv = BlockChainView()
 
         peers = []

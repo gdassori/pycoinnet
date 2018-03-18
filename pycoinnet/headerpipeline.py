@@ -1,5 +1,5 @@
 import asyncio
-import logging
+from . import logger
 
 from pycoin.message.InvItem import InvItem, ITEM_TYPE_BLOCK
 
@@ -8,11 +8,11 @@ from pycoin.message.InvItem import InvItem, ITEM_TYPE_BLOCK
 def _fetch_missing(peer, header):
     the_hash = header.previous_block_hash
     inv_item = InvItem(ITEM_TYPE_BLOCK, the_hash)
-    logging.info("requesting missing block header %s", inv_item)
+    logger.info("requesting missing block header %s", inv_item)
     peer.send_msg("getdata", items=[InvItem(ITEM_TYPE_BLOCK, the_hash)])
     name, data = yield from peer.wait_for_response('block')
     block = data["block"]
-    logging.info("got missing block %s", block.id())
+    logger.info("got missing block %s", block.id())
     return block
 
 
@@ -31,7 +31,7 @@ def improve_headers(peer, bcv, update_q, hash_stop=b'\0'*32):
     """
     while True:
         block_locator_hashes = bcv.block_locator_hashes()
-        logging.debug("getting headers after %d", bcv.last_block_tuple()[0])
+        logger.debug("getting headers after %d", bcv.last_block_tuple()[0])
         peer.send_msg(
             message_name="getheaders", version=1, hashes=block_locator_hashes, hash_stop=hash_stop)
         name, data = yield from peer.wait_for_response('headers')
@@ -49,7 +49,7 @@ def improve_headers(peer, bcv, update_q, hash_stop=b'\0'*32):
         block_number = bcv.do_headers_improve_path(headers)
         if block_number is False:
             continue
-        logging.debug("block header count is now %d", block_number)
+        logger.debug("block header count is now %d", block_number)
         hashes = []
 
         for idx in range(block_number, bcv.last_block_index()+1):

@@ -18,7 +18,8 @@ LOG_FORMAT = '%(asctime)s [%(process)d] [%(levelname)s] %(filename)s:%(lineno)d 
 
 def init_logging(level=logging.NOTSET, asyncio_debug=False):
     asyncio.tasks._DEBUG = asyncio_debug
-    logging.basicConfig(level=level, format=LOG_FORMAT)
+    logger = logging.getLogger("pycoin")
+    logger.setLevel(level=level)
     logging.getLogger("asyncio").setLevel(logging.DEBUG if asyncio_debug else logging.INFO)
 
 
@@ -28,7 +29,7 @@ def set_log_file(logPath, level=logging.NOTSET):
     new_log = logging.FileHandler(logPath)
     new_log.setLevel(level)
     new_log.setFormatter(logging.Formatter(LOG_FORMAT))
-    logging.getLogger().addHandler(new_log)
+    logging.getLogger("pycoin").addHandler(new_log)
 
 
 def storage_base_path():

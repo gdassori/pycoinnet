@@ -7,6 +7,7 @@ This tool gets all headers quickly and prints summary of chain state.
 import argparse
 import asyncio
 import logging
+from pycoinnet import logger
 import os.path
 
 from pycoin.serialize import b2h_rev

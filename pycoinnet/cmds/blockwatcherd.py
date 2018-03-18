@@ -6,7 +6,7 @@ This tool gets all headers quickly and prints summary of chain state.
 
 import argparse
 import asyncio
-import logging
+from pycoinnet import logger
 import os.path
 
 from pycoin.serialize import b2h_rev
@@ -27,7 +27,7 @@ def flush_block_update(bcv, path, block_update):
     if not block_update:
         return
     block_index, block = block_update[0]
-    logging.info("updating %d blocks starting at %d for path %s" % (len(block_update), block_index, path))
+    logger.info("updating %d blocks starting at %d for path %s" % (len(block_update), block_index, path))
     block_number = bcv.do_headers_improve_path([block for _, block in block_update])
     if block_number is not False:
         bcv.winnow()
@@ -56,7 +56,7 @@ async def fetch_blocks(bcv, network, path, max_batch_size=1000):
             await q.put(None)
             return
         first_block_index, block_hashes = item
-        logging.info("got %d new header(s) starting at %d" % (len(block_hashes), first_block_index))
+        logger.info("got %d new header(s) starting at %d" % (len(block_hashes), first_block_index))
         block_hash_priority_pair_list = [(bh, first_block_index + _) for _, bh in enumerate(block_hashes)]
         block_futures = block_fetcher.fetch_blocks(block_hash_priority_pair_list)
         for _, bf in enumerate(block_futures):
