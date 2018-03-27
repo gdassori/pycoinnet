@@ -8,7 +8,7 @@ from pycoinnet.networks import MAINNET, TESTNET
 from pycoinnet.cmds.common import init_logging, peer_connect_pipeline
 from pycoinnet.MappingQueue import MappingQueue
 from pycoinnet.inv_batcher import InvBatcher
-from pycoinnet.version import NODE_NETWORK
+from pycoinnet.version import NODE_NETWORK, version_data_for_peer, NODE_WITNESS
 from pycoinnet.PeerEvent import PeerEvent
 
 
@@ -35,7 +35,7 @@ async def get_blocks(args, network):
     inv_batcher = await set_up_inv_batcher(network)
 
     block_futures = []
-    for _ in args.id:
+    for _ in [args]:
         f = await inv_batcher.inv_item_to_future(InvItem(ITEM_TYPE_BLOCK, h2b_rev(_)))
         block_futures.append(f)
 
@@ -47,15 +47,15 @@ async def get_blocks(args, network):
 
 
 def main():
-    init_logging()
-    parser = argparse.ArgumentParser(description="Fetch a block by ID.")
-    parser.add_argument('id', nargs="+", help='Block ID as hex')
-
-    args = parser.parse_args()
-
+    #init_logging()
+    #parser = argparse.ArgumentParser(description="Fetch a block by ID.")
+    #parser.add_argument('id', nargs="+", help='Block ID as hex')
+#
+    #args = parser.parse_args()
+#
     network = MAINNET
 
-    asyncio.get_event_loop().run_until_complete(get_blocks(args, network))
+    asyncio.get_event_loop().run_until_complete(get_blocks('00000000000000000172d19660ea09af4a9feab2fdd478bf3ee114c9144af9b4', network))
 
 
 if __name__ == '__main__':

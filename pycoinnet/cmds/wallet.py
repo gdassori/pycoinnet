@@ -12,10 +12,11 @@ import time
 
 from pycoin.bloomfilter import BloomFilter, filter_size_required, hash_function_count_required
 from pycoin.convention import satoshi_to_mbtc
-from pycoin.key.validate import is_address_valid
+
 from pycoin.message.InvItem import ITEM_TYPE_MERKLEBLOCK
-from pycoin.tx import Tx
+from pycoin.tx.Tx import Tx
 from pycoin.tx.tx_utils import create_tx
+from pycoin.ui.validate import is_address_valid
 from pycoin.wallet.SQLite3Persistence import SQLite3Persistence
 # from pycoin.wallet.SQLite3Wallet import SQLite3Wallet
 

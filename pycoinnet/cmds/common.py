@@ -10,7 +10,7 @@ from pycoinnet.dnsbootstrap import dns_bootstrap_host_port_q
 from pycoinnet.BlockChainView import BlockChainView
 from pycoinnet.MappingQueue import MappingQueue
 from pycoinnet.Peer import Peer
-from pycoinnet.version import version_data_for_peer
+from pycoinnet.version import version_data_for_peer, NODE_WITNESS, NODE_NONE
 from pycoinnet import logger
 
 
@@ -54,8 +54,14 @@ def peer_connect_pipeline(network, tcp_connect_workers=30, handshake_workers=3, 
     async def do_peer_handshake(rw_tuple, q):
         reader, writer = rw_tuple
         peer = Peer(reader, writer, network.magic_header, network.parse_from_data, network.pack_from_data)
-        version_data = version_data_for_peer(peer)
+        #version_data = version_data_for_peer(peer)
+        version_data = version_data_for_peer(
+            peer, version=70011, local_services=NODE_NONE, remote_services=NODE_WITNESS
+        )
+        print(version_data)
+
         peer.version = await peer.perform_handshake(**version_data)
+        print(peer.version)
         await q.put(peer)
 
     filters = [
