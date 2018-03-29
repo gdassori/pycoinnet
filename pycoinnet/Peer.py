@@ -80,8 +80,15 @@ class Peer:
     @asyncio.coroutine
     def perform_handshake(self, **version_msg):
         # "version"
-        self.send_msg("version", **version_msg)
+        print('sendvers')
+        try:
+            self.send_msg("version", **version_msg)
+        except Exception as e:
+            print('EXCEPTION')
+        print('ah')
         msg, version_data = yield from self.next_message()
+        print(msg, version_data)
+        print('uhu')
         assert msg == 'version'
 
         # "verack"

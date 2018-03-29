@@ -42,5 +42,11 @@ TESTNET = Network(
     btc_parser,
 )
 
+REGTEST = Network(
+    'XTC', binascii.unhexlify('fabfb5da'), [],
+    18444,
+    btc_packer,
+    btc_parser,
+)
 
-NETWORKS = [MAINNET, TESTNET]
+NETWORKS = [MAINNET, TESTNET, REGTEST]

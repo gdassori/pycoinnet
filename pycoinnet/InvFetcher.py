@@ -1,7 +1,8 @@
 import asyncio
 import weakref
 
-from pycoin.message.InvItem import InvItem, ITEM_TYPE_TX, ITEM_TYPE_BLOCK, ITEM_TYPE_MERKLEBLOCK
+from pycoin.message.InvItem import InvItem, ITEM_TYPE_TX, ITEM_TYPE_BLOCK, ITEM_TYPE_MERKLEBLOCK, \
+    ITEM_TYPE_SEGWIT_BLOCK, ITEM_TYPE_SEGWIT_TX
 
 
 class InvFetcher:
@@ -86,9 +87,20 @@ class InvFetcher:
                         break
                 self._peer.send_msg("getdata", items=so_far)
 
-    ITEM_LOOKUP = dict(tx="tx", block="block", merkleblock="header")
-    TYPE_DB = dict(tx=ITEM_TYPE_TX, block=ITEM_TYPE_BLOCK,
-                   merkleblock=ITEM_TYPE_MERKLEBLOCK)
+    ITEM_LOOKUP = dict(
+        tx="tx",
+        block="block",
+        merkleblock="header",
+        segwit_tx="segwit_tx",
+        segwit_block="segwit_block"
+    )
+    TYPE_DB = dict(
+        tx=ITEM_TYPE_TX,
+        block=ITEM_TYPE_BLOCK,
+        merkleblock=ITEM_TYPE_MERKLEBLOCK,
+        segwit_tx=ITEM_TYPE_SEGWIT_TX,
+        segwit_block=ITEM_TYPE_SEGWIT_BLOCK
+    )
 
     @asyncio.coroutine
     def handle_msg(self, msg_name, msg_data):
@@ -102,6 +114,7 @@ class InvFetcher:
         The "merkleblock" item is augmented with .tx_futures that can be
         waited on.
         """
+        print(msg_name)
         if msg_name is None:
             self._is_closed = True
             for f in self._futures.values():

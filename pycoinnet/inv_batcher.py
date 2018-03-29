@@ -64,6 +64,7 @@ class InvBatcher:
     async def add_peer(self, peer, initial_batch_size=1):
         peer.set_request_callback("block", self.handle_block_event)
         peer.set_request_callback("merkleblock", self.handle_block_event)
+        peer.set_request_callback("segwit_block", self.handle_block_event)
         await self._peer_batch_queue.put((peer, initial_batch_size))
         await self._peer_batch_queue.put((peer, initial_batch_size))
 
@@ -87,9 +88,16 @@ class InvBatcher:
         return f
 
     def handle_block_event(self, peer, name, data):
+        print('NAMEONE')
         block = data["block" if name == "block" else "header"]
         block_hash = block.hash()
-        inv_item = InvItem(ITEM_TYPE_BLOCK if name == "block" else ITEM_TYPE_MERKLEBLOCK, block_hash)
+        if name == "block":
+            inv_item = InvItem(ITEM_TYPE_BLOCK, block_hash)
+        elif name == "header":
+            inv_item = InvItem(ITEM_TYPE_MERKLEBLOCK, block_hash)
+        else:
+            print('NAME NOT RECOGNIZED', '%s %s %s' %(peer, name, data))
+            raise ValueError(peer, name, data)
         if inv_item in self._inv_item_hash_to_future:
             f = self._inv_item_hash_to_future[inv_item]
             if not f.done():

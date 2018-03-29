@@ -1,7 +1,7 @@
 import argparse
 import asyncio
 
-from pycoin.message.InvItem import InvItem, ITEM_TYPE_BLOCK
+from pycoin.message.InvItem import InvItem, ITEM_TYPE_SEGWIT_BLOCK, ITEM_TYPE_BLOCK
 from pycoin.serialize import h2b_rev
 
 from pycoinnet.networks import MAINNET, TESTNET, REGTEST
@@ -12,7 +12,7 @@ from pycoinnet.version import NODE_NETWORK
 from pycoinnet.PeerEvent import PeerEvent
 
 
-async def set_up_inv_batcher(network, max_peer_count=1):
+async def set_up_inv_batcher(network, max_peer_count=8):
     inv_batcher = InvBatcher()
 
     # add some peers to InvBatcher
@@ -36,6 +36,7 @@ async def get_blocks(args, network):
 
     block_futures = []
     for _ in args.id:
+        print('ah')
         f = await inv_batcher.inv_item_to_future(InvItem(ITEM_TYPE_BLOCK, h2b_rev(_)))
         block_futures.append(f)
 
