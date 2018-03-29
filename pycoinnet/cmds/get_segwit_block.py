@@ -36,8 +36,7 @@ async def get_blocks(args, network):
 
     block_futures = []
     for _ in args.id:
-        print('ah')
-        f = await inv_batcher.inv_item_to_future(InvItem(ITEM_TYPE_BLOCK, h2b_rev(_)))
+        f = await inv_batcher.inv_item_to_future(InvItem(ITEM_TYPE_SEGWIT_BLOCK, h2b_rev(_)))
         block_futures.append(f)
 
     for f in block_futures:

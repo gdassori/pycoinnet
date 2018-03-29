@@ -10,7 +10,8 @@ from pycoinnet.dnsbootstrap import dns_bootstrap_host_port_q
 from pycoinnet.BlockChainView import BlockChainView
 from pycoinnet.MappingQueue import MappingQueue
 from pycoinnet.Peer import Peer
-from pycoinnet.version import version_data_for_peer
+from pycoinnet.version import version_data_for_peer, NODE_WITNESS, NODE_NONE
+from pycoinnet import logger
 
 
 LOG_FORMAT = '%(asctime)s [%(process)d] [%(levelname)s] %(filename)s:%(lineno)d %(message)s'
@@ -18,8 +19,9 @@ LOG_FORMAT = '%(asctime)s [%(process)d] [%(levelname)s] %(filename)s:%(lineno)d 
 
 def init_logging(level=logging.NOTSET, asyncio_debug=False):
     asyncio.tasks._DEBUG = asyncio_debug
-    logging.basicConfig(level=level, format=LOG_FORMAT)
-    logging.getLogger("asyncio").setLevel(logging.DEBUG if asyncio_debug else logging.INFO)
+    logger = logging.getLogger("pycoin")
+    logger.setLevel(level=level)
+    logger.setLevel(logging.DEBUG if asyncio_debug else logging.INFO)
 
 
 def set_log_file(logPath, level=logging.NOTSET):
@@ -28,7 +30,7 @@ def set_log_file(logPath, level=logging.NOTSET):
     new_log = logging.FileHandler(logPath)
     new_log.setLevel(level)
     new_log.setFormatter(logging.Formatter(LOG_FORMAT))
-    logging.getLogger().addHandler(new_log)
+    logger.addHandler(new_log)
 
 
 def storage_base_path():
@@ -54,8 +56,14 @@ def peer_connect_pipeline(network, tcp_connect_workers=30, handshake_workers=3, 
     async def do_peer_handshake(rw_tuple, q):
         reader, writer = rw_tuple
         peer = Peer(reader, writer, network.magic_header, network.parse_from_data, network.pack_from_data)
-        version_data = version_data_for_peer(peer)
+        #version_data = version_data_for_peer(peer)
+        version_data = version_data_for_peer(
+            peer, version=70015, local_services=NODE_NONE, remote_services=NODE_WITNESS
+        )
+        print(version_data)
+
         peer.version = await peer.perform_handshake(**version_data)
+        print(peer.version)
         await q.put(peer)
 
     filters = [

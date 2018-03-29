@@ -1,5 +1,6 @@
 import asyncio
-import logging
+
+from pycoinnet import logger
 
 
 class PeerEvent:
@@ -34,7 +35,7 @@ class PeerEvent:
                 self._response_futures[name].set_result(data)
                 del self._response_futures[name]
             else:
-                logging.error("unhandled event %s %s", event[0], event[1])
+                logger.error("unhandled event %s %s", event[0], event[1])
 
     def __repr__(self):
         return "<Peer %s>" % str(self._peer.peername())

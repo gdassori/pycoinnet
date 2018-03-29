@@ -5,7 +5,6 @@ import asyncio
 import calendar
 import codecs
 import datetime
-import logging
 import io
 import os.path
 import sqlite3
@@ -13,15 +12,16 @@ import time
 
 from pycoin.bloomfilter import BloomFilter, filter_size_required, hash_function_count_required
 from pycoin.convention import satoshi_to_mbtc
-from pycoin.key.validate import is_address_valid
+
 from pycoin.message.InvItem import ITEM_TYPE_MERKLEBLOCK
-from pycoin.tx import Tx
+from pycoin.tx.Tx import Tx
 from pycoin.tx.tx_utils import create_tx
+from pycoin.ui.validate import is_address_valid
 from pycoin.wallet.SQLite3Persistence import SQLite3Persistence
 # from pycoin.wallet.SQLite3Wallet import SQLite3Wallet
 
 from pycoinnet.cmds.common import init_logging, peer_connect_pipeline
-
+from pycoinnet import logger
 from pycoinnet.networks import MAINNET
 from pycoinnet.BlockChainView import BlockChainView
 
@@ -58,7 +58,7 @@ async def wallet_fetch(path, args):
             bcv_json = f.read()
         blockchain_view = BlockChainView.from_json(bcv_json)
     except Exception:
-        logging.exception("can't parse %s", archived_headers_path)
+        logger.exception("can't parse %s", archived_headers_path)
         blockchain_view = BlockChainView()
 
     if args.rewind:

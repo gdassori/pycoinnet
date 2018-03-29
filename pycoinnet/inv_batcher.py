@@ -1,8 +1,8 @@
 import asyncio
-import logging
 
-from pycoin.message.InvItem import InvItem, ITEM_TYPE_BLOCK, ITEM_TYPE_MERKLEBLOCK
+from pycoin.message.InvItem import InvItem, ITEM_TYPE_BLOCK, ITEM_TYPE_MERKLEBLOCK, ITEM_TYPE_TX
 from pycoinnet.MappingQueue import MappingQueue
+from pycoinnet import logger
 
 
 class InvBatcher:
@@ -15,7 +15,7 @@ class InvBatcher:
             peer, desired_batch_size = peer_batch_tuple
             batch = []
             skipped = []
-            logging.info("peer %s trying to build batch up to size %d", peer, desired_batch_size)
+            logger.info("peer %s trying to build batch up to size %d", peer, desired_batch_size)
             while len(batch) == 0 or (
                     len(batch) < desired_batch_size and not self._inv_item_future_queue.empty()):
                 item = await self._inv_item_future_queue.get()
@@ -42,12 +42,12 @@ class InvBatcher:
             await asyncio.wait(futures, timeout=target_batch_time)
             end_time = loop.time()
             batch_time = end_time - start_time
-            logging.info("completed batch size of %d with time %f", len(inv_items), batch_time)
+            logger.info("completed batch size of %d with time %f", len(inv_items), batch_time)
             completed_count = sum([1 for f in futures if f.done()])
             item_per_unit_time = completed_count / batch_time
             new_batch_size = min(prior_max * 4, int(target_batch_time * item_per_unit_time + 0.5))
             new_batch_size = min(max(1, new_batch_size), max_batch_size)
-            logging.info("new batch size for %s is %d", peer, new_batch_size)
+            logger.info("new batch size for %s is %d", peer, new_batch_size)
             for (priority, inv_item, f, peers_tried) in batch:
                 if not f.done():
                     peers_tried.add(peer)
@@ -64,21 +64,20 @@ class InvBatcher:
     async def add_peer(self, peer, initial_batch_size=1):
         peer.set_request_callback("block", self.handle_block_event)
         peer.set_request_callback("merkleblock", self.handle_block_event)
-        peer.set_request_callback("segwit_block", self.handle_block_event)
         await self._peer_batch_queue.put((peer, initial_batch_size))
         await self._peer_batch_queue.put((peer, initial_batch_size))
 
-    async def inv_item_to_future(self, inv_item, priority=0):
+    async def inv_item_to_future(self, inv_item: InvItem, priority=0):
         f = self._inv_item_hash_to_future.get(inv_item)
         if not f:
             f = asyncio.Future()
-            self._inv_item_hash_to_future[inv_item] = f
+            self._inv_item_hash_to_future[str(inv_item)] = f
 
             def remove_later(f):
 
                 def remove():
                     if inv_item in self._inv_item_hash_to_future:
-                        del self._inv_item_hash_to_future[inv_item]
+                        del self._inv_item_hash_to_future[str(inv_item)]
 
                 asyncio.get_event_loop().call_later(5, remove)
 
@@ -98,12 +97,12 @@ class InvBatcher:
         else:
             print('NAME NOT RECOGNIZED', '%s %s %s' %(peer, name, data))
             raise ValueError(peer, name, data)
-        if inv_item in self._inv_item_hash_to_future:
-            f = self._inv_item_hash_to_future[inv_item]
+        if str(inv_item) in self._inv_item_hash_to_future:
+            f = self._inv_item_hash_to_future[str(inv_item)]
             if not f.done():
                 f.set_result(block)
         else:
-            logging.error("missing future for block %s", block.id())
+            logger.error("missing future for block %s", block.id())
 
     def stop(self):
         self._peer_batch_queue.stop()

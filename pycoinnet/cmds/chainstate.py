@@ -8,10 +8,7 @@ import argparse
 import asyncio
 import logging
 import os.path
-
 from pycoin.serialize import b2h_rev
-
-from pycoinnet.dnsbootstrap import dns_bootstrap_host_port_q
 from pycoinnet.headerpipeline import improve_headers
 from pycoinnet.networks import MAINNET
 from pycoinnet.MappingQueue import MappingQueue

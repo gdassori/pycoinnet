@@ -2,11 +2,12 @@ import hashlib
 
 from pycoin import ecdsa
 from pycoin.block import Block
-from pycoin.encoding import public_pair_to_sec
+from pycoin.encoding.sec import public_pair_to_sec
+
 from pycoin.key.Key import Key
 from pycoin.merkle import merkle
 from pycoin.tx.Tx import Tx, TxIn, TxOut
-from pycoin.ui import standard_tx_out_script
+
 
 GENESIS_TIME = 1390000000
 DEFAULT_DIFFICULTY = 3000000

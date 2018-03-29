@@ -1,9 +1,10 @@
 import asyncio
 import binascii
-import logging
 import struct
 
-from pycoin import encoding
+from pycoin.encoding.hash import double_sha256
+
+from pycoinnet import logger
 
 
 class ProtocolError(Exception):
@@ -27,15 +28,16 @@ class Peer:
         self._bytes_writ = 0
 
     def send_msg(self, message_name, **kwargs):
+
         message_data = self._pack_from_data(message_name, **kwargs)
         message_type = message_name.encode("utf8")
         message_type_padded = (message_type+(b'\0'*12))[:12]
         message_size = struct.pack("<L", len(message_data))
-        message_checksum = encoding.double_sha256(message_data)[:4]
+        message_checksum = double_sha256(message_data)[:4]
         packet = b"".join([
             self._magic_header, message_type_padded, message_size, message_checksum, message_data
         ])
-        logging.debug("sending message %s [%d bytes] to %s", message_type.decode("utf8"), len(packet), self)
+        logger.debug("sending message %s [%d bytes] to %s", message_type.decode("utf8"), len(packet), self)
         self._bytes_writ += len(packet)
         self._writer.write(packet)
 
@@ -68,11 +70,11 @@ class Peer:
             self._bytes_read += size
 
         # check the hash
-        actual_hash = encoding.double_sha256(message_data)[:4]
+        actual_hash = double_sha256(message_data)[:4]
         if actual_hash != transmitted_hash:
             raise ProtocolError("checksum is WRONG: %s instead of %s" % (
                 binascii.hexlify(actual_hash), binascii.hexlify(transmitted_hash)))
-        logging.debug("message %s: %s (%d byte payload)", self, message_name, len(message_data))
+        logger.debug("message %s: %s (%d byte payload)", self, message_name, len(message_data))
         if unpack_to_dict:
             message_data = self._parse_from_data(message_name, message_data)
         return message_name, message_data
