@@ -56,7 +56,7 @@ def peer_connect_pipeline(network, tcp_connect_workers=30, handshake_workers=3, 
         peer = Peer(reader, writer, network.magic_header, network.parse_from_data, network.pack_from_data)
         #version_data = version_data_for_peer(peer)
         version_data = version_data_for_peer(
-            peer, version=70011, local_services=NODE_NONE, remote_services=NODE_WITNESS
+            peer, version=70015, local_services=NODE_NONE, remote_services=NODE_WITNESS
         )
         print(version_data)
 
