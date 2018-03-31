@@ -114,7 +114,6 @@ class InvFetcher:
         The "merkleblock" item is augmented with .tx_futures that can be
         waited on.
         """
-        print(msg_name)
         if msg_name is None:
             self._is_closed = True
             for f in self._futures.values():

@@ -40,8 +40,8 @@ def storage_base_path():
     return p
 
 
-def peer_connect_pipeline(network, tcp_connect_workers=30, handshake_workers=3, host_q=None, loop=None):
-
+def peer_connect_pipeline(network, tcp_connect_workers=1, handshake_workers=1, host_q=None, loop=None):
+    print('aaaa')
     #host_q = host_q or dns_bootstrap_host_port_q(network)
     host_q = asyncio.Queue()
     host_q.put_nowait(('127.0.0.1', 18444))

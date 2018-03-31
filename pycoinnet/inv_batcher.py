@@ -87,7 +87,6 @@ class InvBatcher:
         return f
 
     def handle_block_event(self, peer, name, data):
-        print('NAMEONE')
         block = data["block" if name == "block" else "header"]
         block_hash = block.hash()
         if name == "block":
@@ -95,7 +94,6 @@ class InvBatcher:
         elif name == "header":
             inv_item = InvItem(ITEM_TYPE_MERKLEBLOCK, block_hash)
         else:
-            print('NAME NOT RECOGNIZED', '%s %s %s' %(peer, name, data))
             raise ValueError(peer, name, data)
         if str(inv_item) in self._inv_item_hash_to_future:
             f = self._inv_item_hash_to_future[str(inv_item)]

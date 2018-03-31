@@ -72,7 +72,6 @@ async def fetch_blocks(bcv, network, path, max_batch_size=1000):
     block_update = []
     while True:
         update = await q.get()
-        print(update)
         if update is None:
             break
         block_index, block = update

@@ -126,7 +126,6 @@ def main():
             block, idx = await peer_to_block_pipe.get()
             if block is None:
                 break
-            print("%d : %s" % (idx, block))
 
     asyncio.get_event_loop().run_until_complete(go())
 
