@@ -100,7 +100,7 @@ class InvBatcher:
             if not f.done():
                 f.set_result(block)
         else:
-            logger.error("missing future for block %s", block.id())
+            logger.warning("missing future for block %s", block.id())
 
     def stop(self):
         self._peer_batch_queue.stop()
