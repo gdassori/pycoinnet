@@ -2,7 +2,7 @@
 
 from setuptools import setup
 
-version = "0.19"
+version = "0.19-spruned-01"
 
 setup(
     name="pycoinnet",
