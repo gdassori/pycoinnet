@@ -41,10 +41,9 @@ def storage_base_path():
 
 
 def peer_connect_pipeline(network, tcp_connect_workers=1, handshake_workers=1, host_q=None, loop=None):
-    print('aaaa')
-    #host_q = host_q or dns_bootstrap_host_port_q(network)
-    host_q = asyncio.Queue()
-    host_q.put_nowait(('127.0.0.1', 18444))
+    host_q = host_q or dns_bootstrap_host_port_q(network)
+    #host_q = asyncio.Queue()
+    #host_q.put_nowait(('127.0.0.1', 18444))
 
     async def do_tcp_connect(host_port_pair, q):
         host, port = host_port_pair
@@ -56,14 +55,10 @@ def peer_connect_pipeline(network, tcp_connect_workers=1, handshake_workers=1, h
     async def do_peer_handshake(rw_tuple, q):
         reader, writer = rw_tuple
         peer = Peer(reader, writer, network.magic_header, network.parse_from_data, network.pack_from_data)
-        #version_data = version_data_for_peer(peer)
         version_data = version_data_for_peer(
             peer, version=70015, local_services=NODE_NONE, remote_services=NODE_WITNESS
         )
-        print(version_data)
-
         peer.version = await peer.perform_handshake(**version_data)
-        print(peer.version)
         await q.put(peer)
 
     filters = [
