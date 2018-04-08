@@ -76,7 +76,7 @@ class InvBatcher:
             def remove_later(f):
 
                 def remove():
-                    if inv_item in self._inv_item_hash_to_future:
+                    if str(inv_item) in self._inv_item_hash_to_future:
                         del self._inv_item_hash_to_future[str(inv_item)]
 
                 asyncio.get_event_loop().call_later(5, remove)
