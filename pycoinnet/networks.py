@@ -34,8 +34,7 @@ MAINNET = Network(
 
 TESTNET = Network(
     'XTC', binascii.unhexlify('0B110907'), [
-        "bitcoin.petertodd.org", "testnet-seed.bitcoin.petertodd.org",
-        "bluematt.me", "testnet-seed.bluematt.me"
+        "testnet-seed.bitcoin.jonasschnelli.ch"
     ],
     18333,
     btc_packer,
